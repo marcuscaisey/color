@@ -59,7 +59,7 @@ func TestColor(t *testing.T) {
 	for _, c := range testColors {
 		line := New(c.code).Sprintf("%s", c.text)
 		scannedLine := fmt.Sprintf("%q", line)
-		colored := fmt.Sprintf("\x1b[%dm%s\x1b[0m", c.code, c.text)
+		colored := fmt.Sprintf("\x1b[%dm%s\x1b[39m", c.code, c.text)
 		escapedForm := fmt.Sprintf("%q", colored)
 
 		fmt.Printf("%s\t: %s\n", c.text, line)
@@ -393,22 +393,22 @@ func TestNoFormatString(t *testing.T) {
 		args   []interface{}
 		want   string
 	}{
-		{BlackString, "%s", nil, "\x1b[30m%s\x1b[0m"},
-		{RedString, "%s", nil, "\x1b[31m%s\x1b[0m"},
-		{GreenString, "%s", nil, "\x1b[32m%s\x1b[0m"},
-		{YellowString, "%s", nil, "\x1b[33m%s\x1b[0m"},
-		{BlueString, "%s", nil, "\x1b[34m%s\x1b[0m"},
-		{MagentaString, "%s", nil, "\x1b[35m%s\x1b[0m"},
-		{CyanString, "%s", nil, "\x1b[36m%s\x1b[0m"},
-		{WhiteString, "%s", nil, "\x1b[37m%s\x1b[0m"},
-		{HiBlackString, "%s", nil, "\x1b[90m%s\x1b[0m"},
-		{HiRedString, "%s", nil, "\x1b[91m%s\x1b[0m"},
-		{HiGreenString, "%s", nil, "\x1b[92m%s\x1b[0m"},
-		{HiYellowString, "%s", nil, "\x1b[93m%s\x1b[0m"},
-		{HiBlueString, "%s", nil, "\x1b[94m%s\x1b[0m"},
-		{HiMagentaString, "%s", nil, "\x1b[95m%s\x1b[0m"},
-		{HiCyanString, "%s", nil, "\x1b[96m%s\x1b[0m"},
-		{HiWhiteString, "%s", nil, "\x1b[97m%s\x1b[0m"},
+		{BlackString, "%s", nil, "\x1b[30m%s\x1b[39m"},
+		{RedString, "%s", nil, "\x1b[31m%s\x1b[39m"},
+		{GreenString, "%s", nil, "\x1b[32m%s\x1b[39m"},
+		{YellowString, "%s", nil, "\x1b[33m%s\x1b[39m"},
+		{BlueString, "%s", nil, "\x1b[34m%s\x1b[39m"},
+		{MagentaString, "%s", nil, "\x1b[35m%s\x1b[39m"},
+		{CyanString, "%s", nil, "\x1b[36m%s\x1b[39m"},
+		{WhiteString, "%s", nil, "\x1b[37m%s\x1b[39m"},
+		{HiBlackString, "%s", nil, "\x1b[90m%s\x1b[39m"},
+		{HiRedString, "%s", nil, "\x1b[91m%s\x1b[39m"},
+		{HiGreenString, "%s", nil, "\x1b[92m%s\x1b[39m"},
+		{HiYellowString, "%s", nil, "\x1b[93m%s\x1b[39m"},
+		{HiBlueString, "%s", nil, "\x1b[94m%s\x1b[39m"},
+		{HiMagentaString, "%s", nil, "\x1b[95m%s\x1b[39m"},
+		{HiCyanString, "%s", nil, "\x1b[96m%s\x1b[39m"},
+		{HiWhiteString, "%s", nil, "\x1b[97m%s\x1b[39m"},
 	}
 
 	for i, test := range tests {
@@ -428,7 +428,7 @@ func TestColor_Println_Newline(t *testing.T) {
 	c.Println("foo")
 
 	got := readRaw(t, rb)
-	want := "\x1b[31mfoo\x1b[0m\n"
+	want := "\x1b[31mfoo\x1b[39m\n"
 
 	if want != got {
 		t.Errorf("Println newline error\n\nwant: %q\n got: %q", want, got)
@@ -439,7 +439,7 @@ func TestColor_Sprintln_Newline(t *testing.T) {
 	c := New(FgRed)
 
 	got := c.Sprintln("foo")
-	want := "\x1b[31mfoo\x1b[0m\n"
+	want := "\x1b[31mfoo\x1b[39m\n"
 
 	if want != got {
 		t.Errorf("Println newline error\n\nwant: %q\n got: %q", want, got)
@@ -452,7 +452,7 @@ func TestColor_Fprintln_Newline(t *testing.T) {
 	c.Fprintln(rb, "foo")
 
 	got := readRaw(t, rb)
-	want := "\x1b[31mfoo\x1b[0m\n"
+	want := "\x1b[31mfoo\x1b[39m\n"
 
 	if want != got {
 		t.Errorf("Println newline error\n\nwant: %q\n got: %q", want, got)
@@ -482,7 +482,7 @@ func TestIssue206_1(t *testing.T) {
 	fmt.Println(line)
 
 	var result = fmt.Sprintf("%v", line)
-	const expectedResult = "\x1b[36mword1 \x1b[4mword2\x1b[24m word3 \x1b[4mword4\x1b[24m\x1b[0m"
+	const expectedResult = "\x1b[36mword1 \x1b[4mword2\x1b[24m word3 \x1b[4mword4\x1b[24m\x1b[39m"
 
 	if !bytes.Equal([]byte(result), []byte(expectedResult)) {
 		t.Errorf("Expecting %v, got '%v'\n", expectedResult, result)
@@ -498,7 +498,7 @@ func TestIssue206_2(t *testing.T) {
 	fmt.Println(line)
 
 	var result = fmt.Sprintf("%v", line)
-	const expectedResult = "\x1b[32m\x1b[4munderlined regular green\x1b[24m\x1b[0m \x1b[31m\x1b[1mbold red\x1b[22m\x1b[0m"
+	const expectedResult = "\x1b[32m\x1b[4munderlined regular green\x1b[24m\x1b[39m \x1b[31m\x1b[1mbold red\x1b[22m\x1b[39m"
 
 	if !bytes.Equal([]byte(result), []byte(expectedResult)) {
 		t.Errorf("Expecting %v, got '%v'\n", expectedResult, result)
@@ -516,7 +516,7 @@ func TestIssue218(t *testing.T) {
 	fmt.Println(params...)
 	fmt.Print(result)
 
-	const expectedResult = "\x1b[36mword1 word2 word3 word4\n\x1b[0m\n"
+	const expectedResult = "\x1b[36mword1 word2 word3 word4\n\x1b[39m\n"
 
 	if !bytes.Equal([]byte(result), []byte(expectedResult)) {
 		t.Errorf("Sprintln: Expecting %v (%v), got '%v (%v)'\n", expectedResult, []byte(expectedResult), result, []byte(result))

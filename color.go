@@ -76,17 +76,32 @@ const (
 	ResetCrossedOut
 )
 
-var mapResetAttributes map[Attribute]Attribute = map[Attribute]Attribute{
-	Bold:         ResetBold,
-	Faint:        ResetBold,
-	Italic:       ResetItalic,
-	Underline:    ResetUnderline,
-	BlinkSlow:    ResetBlinking,
-	BlinkRapid:   ResetBlinking,
-	ReverseVideo: ResetReversed,
-	Concealed:    ResetConcealed,
-	CrossedOut:   ResetCrossedOut,
+var resetAttributesByAttributeRange = map[struct{ Start, End Attribute }]Attribute{
+	{Start: FgBlack, End: FgWhite}:     FgDefault,
+	{Start: FgHiBlack, End: FgHiWhite}: FgDefault,
+	{Start: BgBlack, End: BgWhite}:     BgDefault,
+	{Start: BgHiBlack, End: BgHiWhite}: BgDefault,
 }
+
+var resetAttributesByAttribute map[Attribute]Attribute = func() map[Attribute]Attribute {
+	m := map[Attribute]Attribute{
+		Bold:         ResetBold,
+		Faint:        ResetBold,
+		Italic:       ResetItalic,
+		Underline:    ResetUnderline,
+		BlinkSlow:    ResetBlinking,
+		BlinkRapid:   ResetBlinking,
+		ReverseVideo: ResetReversed,
+		Concealed:    ResetConcealed,
+		CrossedOut:   ResetCrossedOut,
+	}
+	for attributeRange, resetAttribute := range resetAttributesByAttributeRange {
+		for attribute := attributeRange.Start; attribute <= attributeRange.End; attribute++ {
+			m[attribute] = resetAttribute
+		}
+	}
+	return m
+}()
 
 // Foreground text colors
 const (
@@ -98,6 +113,8 @@ const (
 	FgMagenta
 	FgCyan
 	FgWhite
+	_
+	FgDefault
 )
 
 // Foreground Hi-Intensity text colors
@@ -122,6 +139,8 @@ const (
 	BgMagenta
 	BgCyan
 	BgWhite
+	_
+	BgDefault
 )
 
 // Background Hi-Intensity text colors
@@ -405,7 +424,7 @@ func (c *Color) unformat() string {
 	format := make([]string, len(c.params))
 	for i, v := range c.params {
 		format[i] = strconv.Itoa(int(Reset))
-		ra, ok := mapResetAttributes[v]
+		ra, ok := resetAttributesByAttribute[v]
 		if ok {
 			format[i] = strconv.Itoa(int(ra))
 		}
